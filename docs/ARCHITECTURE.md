@@ -16,7 +16,23 @@ The Python package currently contains:
 - `slicers/` — slicer-specific command construction;
 - `fingerprint.py` — streaming SHA-256 file fingerprints;
 - `plan.py` — portable JSON plan assembly;
-- `cli.py` — user-facing `doctor` and `plan` commands.
+- `run.py` — explicit approval, isolated process execution, output
+  fingerprinting, and privacy-reviewed run manifests;
+- `cli.py` — user-facing `doctor`, `plan`, and `run` commands.
 
 Slicers are executed as separate local processes using argument arrays.
 OpenPrintBench does not link to, embed, or redistribute slicer code.
+
+## Run isolation
+
+Execution is opt-in and creates a new run directory. The slicer receives that
+directory as its working directory, a private `HOME`, a private temporary
+directory, and an environment with secret-like variables removed. Existing run
+directories are rejected to avoid mixing evidence.
+
+The run manifest uses placeholders instead of machine-local paths. It records
+the full fixture source commit and license, input/settings hashes, slicer
+version, start time, duration, exit status, timeout state, output hashes, and
+the hash of a redacted log. It sets `state` to `executed` and keeps
+`physical_validation` null; a successful process does not imply a physical
+print.

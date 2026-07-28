@@ -10,7 +10,9 @@ from pathlib import Path
 
 from openprintbench import __version__
 from openprintbench.discovery import DEFINITIONS, probe_slicer
+from openprintbench.models import FixtureProvenance
 from openprintbench.plan import create_bambu_plan, portable_plan
+from openprintbench.run import execute_bambu_slice
 from openprintbench.slicers.bambu import BambuSliceRequest
 
 
@@ -36,6 +38,27 @@ def build_parser() -> argparse.ArgumentParser:
     plan.add_argument("--process-settings", type=Path)
     plan.add_argument("--filament-settings", type=Path, action="append", default=[])
     plan.add_argument("--manifest", type=Path, help="write the portable JSON plan")
+
+    run = subparsers.add_parser("run", help="execute one explicitly approved isolated slice")
+    run.add_argument("--slicer", choices=("bambu",), default="bambu")
+    run.add_argument("--executable", type=Path)
+    run.add_argument("--input", type=Path, required=True)
+    run.add_argument("--run-dir", type=Path, required=True)
+    run.add_argument("--output-name", default="sliced.3mf")
+    run.add_argument("--plate", type=int, default=0)
+    run.add_argument("--debug-level", type=int, default=2)
+    run.add_argument("--machine-settings", type=Path)
+    run.add_argument("--process-settings", type=Path)
+    run.add_argument("--filament-settings", type=Path, action="append", default=[])
+    run.add_argument("--fixture-source-url", required=True)
+    run.add_argument("--fixture-source-commit", required=True)
+    run.add_argument("--fixture-license", required=True)
+    run.add_argument("--timeout-seconds", type=float, default=900.0)
+    run.add_argument(
+        "--approve",
+        action="store_true",
+        help="explicitly approve launching the local slicer process",
+    )
     return parser
 
 
@@ -50,6 +73,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             return _doctor(as_json=args.json)
         if args.command == "plan":
             return _plan(args)
+        if args.command == "run":
+            return _run(args)
     except ValueError as error:
         parser.error(str(error))
 
@@ -98,6 +123,39 @@ def _plan(args: argparse.Namespace) -> int:
         destination.parent.mkdir(parents=True, exist_ok=True)
         destination.write_text(f"{output}\n", encoding="utf-8")
     return 0
+
+
+def _run(args: argparse.Namespace) -> int:
+    probe = probe_slicer("bambu", args.executable)
+    if not probe.available or probe.executable is None:
+        raise ValueError(f"Bambu Studio probe failed: {probe.error or 'unknown error'}")
+
+    run_dir = args.run_dir.expanduser().resolve()
+    request = BambuSliceRequest(
+        executable=Path(probe.executable),
+        input_path=args.input,
+        output_dir=run_dir / "output",
+        output_name=args.output_name,
+        plate=args.plate,
+        debug_level=args.debug_level,
+        machine_settings=args.machine_settings,
+        process_settings=args.process_settings,
+        filament_settings=tuple(args.filament_settings),
+    )
+    evidence = execute_bambu_slice(
+        request,
+        probe,
+        run_dir=run_dir,
+        provenance=FixtureProvenance(
+            source_url=args.fixture_source_url,
+            source_commit=args.fixture_source_commit,
+            license=args.fixture_license,
+        ),
+        approved=args.approve,
+        timeout_seconds=args.timeout_seconds,
+    )
+    print(Path(evidence.manifest_path).read_text(encoding="utf-8"), end="")
+    return 0 if evidence.succeeded else 1
 
 
 if __name__ == "__main__":

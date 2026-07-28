@@ -85,3 +85,61 @@ def test_plan_writes_portable_manifest(
     file_payload = json.loads(manifest.read_text(encoding="utf-8"))
     assert stdout_payload == file_payload
     assert "${INPUT}" in file_payload["command"]
+
+
+def test_run_executes_only_with_explicit_approval(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    executable = tmp_path / "BambuStudio"
+    executable.write_text(
+        """#!/usr/bin/env python3
+import pathlib
+import sys
+output_dir = pathlib.Path(sys.argv[sys.argv.index("--outputdir") + 1])
+output_name = sys.argv[sys.argv.index("--export-3mf") + 1]
+output_dir.mkdir(parents=True, exist_ok=True)
+(output_dir / output_name).write_bytes(b"slice")
+""",
+        encoding="utf-8",
+    )
+    executable.chmod(0o755)
+    source = tmp_path / "project.3mf"
+    source.write_bytes(b"3mf")
+    monkeypatch.setattr(
+        "openprintbench.cli.probe_slicer",
+        lambda name, explicit=None: SlicerProbe(
+            "bambu",
+            "Bambu Studio",
+            True,
+            str(executable),
+            "02.06.00.51",
+            "test",
+        ),
+    )
+
+    assert (
+        main(
+            [
+                "run",
+                "--input",
+                str(source),
+                "--run-dir",
+                str(tmp_path / "run"),
+                "--fixture-source-url",
+                "https://github.com/kforris/OpenPrintBench/blob/"
+                + "a" * 40
+                + "/fixtures/cube-20mm.stl",
+                "--fixture-source-commit",
+                "a" * 40,
+                "--fixture-license",
+                "CC0-1.0",
+                "--approve",
+            ]
+        )
+        == 0
+    )
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["state"] == "executed"
+    assert payload["exit_status"] == 0
