@@ -16,6 +16,7 @@ The Python package currently contains:
 - `slicers/` — slicer-specific command construction;
 - `fingerprint.py` — streaming SHA-256 file fingerprints;
 - `plan.py` — portable JSON plan assembly;
+- `profiles.py` — pinned, local Bambu profile inheritance materialization;
 - `run.py` — explicit approval, isolated process execution, output
   fingerprinting, and privacy-reviewed run manifests;
 - `cli.py` — user-facing `doctor`, `plan`, and `run` commands.
@@ -36,3 +37,10 @@ version, start time, duration, exit status, timeout state, output hashes, and
 the hash of a redacted log. It sets `state` to `executed` and keeps
 `physical_validation` null; a successful process does not imply a physical
 print.
+
+For a bare STL, Bambu Studio's CLI needs complete machine, process, and
+filament configuration. OpenPrintBench recursively resolves `inherits` and
+`include` references from a user-installed profile tree, then writes complete
+profiles inside the private run directory. The source tree commit, license,
+leaf hashes, materializer version, and resulting hashes are recorded. Profile
+source files and generated slicer outputs are never added to the repository.

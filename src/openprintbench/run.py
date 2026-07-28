@@ -17,8 +17,13 @@ from openprintbench.fingerprint import fingerprint_file
 from openprintbench.models import (
     FixtureProvenance,
     OutputFingerprint,
+    ProfileProvenance,
     RunEvidence,
     SlicerProbe,
+)
+from openprintbench.profiles import (
+    MATERIALIZER_VERSION,
+    BambuProfileStore,
 )
 from openprintbench.slicers.bambu import BambuSliceRequest, build_bambu_slice_command
 
@@ -48,6 +53,8 @@ def execute_bambu_slice(
     *,
     run_dir: Path,
     provenance: FixtureProvenance,
+    profile_root: Path | None = None,
+    profile_provenance: ProfileProvenance | None = None,
     approved: bool,
     timeout_seconds: float = DEFAULT_TIMEOUT_SECONDS,
 ) -> RunEvidence:
@@ -58,9 +65,12 @@ def execute_bambu_slice(
         probe,
         run_dir=run_dir,
         provenance=provenance,
+        profile_root=profile_root,
+        profile_provenance=profile_provenance,
         approved=approved,
         timeout_seconds=timeout_seconds,
     )
+    profile_store = BambuProfileStore(profile_root) if profile_root is not None else None
     resolved_run_dir = run_dir.expanduser().resolve()
     resolved_run_dir.mkdir(mode=0o700)
     output_dir = resolved_run_dir / "output"
@@ -71,6 +81,21 @@ def execute_bambu_slice(
     private_tmp.mkdir(mode=0o700)
 
     isolated_request = replace(request, output_dir=output_dir)
+    if profile_store is not None:
+        assert request.machine_settings is not None
+        assert request.process_settings is not None
+        materialized = profile_store.materialize(
+            machine=request.machine_settings,
+            process=request.process_settings,
+            filaments=request.filament_settings,
+            destination=resolved_run_dir / "config",
+        )
+        isolated_request = replace(
+            isolated_request,
+            machine_settings=materialized.machine,
+            process_settings=materialized.process,
+            filament_settings=materialized.filaments,
+        )
     command = build_bambu_slice_command(isolated_request)
     environment = _isolated_environment(private_home, private_tmp)
     started_at = datetime.now(UTC)
@@ -116,6 +141,8 @@ def execute_bambu_slice(
         isolated_request,
         probe,
         provenance,
+        source_request=request,
+        profile_provenance=profile_provenance,
         command=command,
         started_at=started_at,
         duration_seconds=duration_seconds,
@@ -145,6 +172,8 @@ def _validate_run_request(
     *,
     run_dir: Path,
     provenance: FixtureProvenance,
+    profile_root: Path | None,
+    profile_provenance: ProfileProvenance | None,
     approved: bool,
     timeout_seconds: float,
 ) -> None:
@@ -163,12 +192,40 @@ def _validate_run_request(
         raise ValueError(
             f"timeout must be greater than 0 and at most {MAX_TIMEOUT_SECONDS:g} seconds"
         )
-    if not provenance.source_url.startswith("https://"):
-        raise ValueError("fixture source URL must use https")
-    if FULL_COMMIT.fullmatch(provenance.source_commit) is None:
-        raise ValueError("fixture source commit must be a full 40-character Git SHA")
-    if not provenance.license.strip():
-        raise ValueError("fixture license must be recorded")
+    _validate_provenance(
+        provenance.source_url,
+        provenance.source_commit,
+        provenance.license,
+        label="fixture",
+    )
+    if request.input_path.suffix.lower() == ".stl" and (
+        profile_root is None or profile_provenance is None
+    ):
+        raise ValueError("STL execution requires a profile root and pinned profile provenance")
+    if (profile_root is None) != (profile_provenance is None):
+        raise ValueError("profile root and profile provenance must be provided together")
+    if profile_provenance is not None:
+        _validate_provenance(
+            profile_provenance.source_url,
+            profile_provenance.source_commit,
+            profile_provenance.license,
+            label="profile",
+        )
+
+
+def _validate_provenance(
+    source_url: str,
+    source_commit: str,
+    license_name: str,
+    *,
+    label: str,
+) -> None:
+    if not source_url.startswith("https://"):
+        raise ValueError(f"{label} source URL must use https")
+    if FULL_COMMIT.fullmatch(source_commit) is None:
+        raise ValueError(f"{label} source commit must be a full 40-character Git SHA")
+    if not license_name.strip():
+        raise ValueError(f"{label} license must be recorded")
 
 
 def _isolated_environment(private_home: Path, private_tmp: Path) -> dict[str, str]:
@@ -264,6 +321,8 @@ def _build_manifest(
     request: BambuSliceRequest,
     probe: SlicerProbe,
     provenance: FixtureProvenance,
+    source_request: BambuSliceRequest,
+    profile_provenance: ProfileProvenance | None,
     *,
     command: tuple[str, ...],
     started_at: datetime,
@@ -281,9 +340,20 @@ def _build_manifest(
     )
     portable_command = [_replace_paths(item, redactions) for item in command]
     settings: dict[str, Any] = {
-        "machine": _optional_fingerprint(request.machine_settings),
-        "process": _optional_fingerprint(request.process_settings),
-        "filaments": [fingerprint_file(path).to_dict() for path in request.filament_settings],
+        "materializer": MATERIALIZER_VERSION if profile_provenance is not None else None,
+        "provenance": profile_provenance.to_dict() if profile_provenance is not None else None,
+        "sources": {
+            "machine": _optional_fingerprint(source_request.machine_settings),
+            "process": _optional_fingerprint(source_request.process_settings),
+            "filaments": [
+                fingerprint_file(path).to_dict() for path in source_request.filament_settings
+            ],
+        },
+        "materialized": {
+            "machine": _optional_fingerprint(request.machine_settings),
+            "process": _optional_fingerprint(request.process_settings),
+            "filaments": [fingerprint_file(path).to_dict() for path in request.filament_settings],
+        },
     }
     log_fingerprint = fingerprint_file(log_path)
     return {

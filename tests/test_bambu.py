@@ -70,6 +70,8 @@ def test_stl_includes_settings(executable: Path, tmp_path: Path) -> None:
     filament_index = command.index("--load-filaments")
     assert command[settings_index + 1] == f"{machine.resolve()};{process.resolve()}"
     assert command[filament_index + 1] == str(filament.resolve())
+    assert command[command.index("--orient") + 1] == "1"
+    assert command[command.index("--arrange") + 1] == "1"
 
 
 @pytest.mark.parametrize("plate", [-1, -10])

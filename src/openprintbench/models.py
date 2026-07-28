@@ -74,6 +74,20 @@ class FixtureProvenance:
 
 
 @dataclass(frozen=True, slots=True)
+class ProfileProvenance:
+    """Pinned source and license for locally materialized slicer profiles."""
+
+    source_url: str
+    source_commit: str
+    license: str
+
+    def to_dict(self) -> dict[str, Any]:
+        """Return a JSON-serializable mapping."""
+
+        return asdict(self)
+
+
+@dataclass(frozen=True, slots=True)
 class OutputFingerprint:
     """Stable identity for one file produced inside the isolated output tree."""
 

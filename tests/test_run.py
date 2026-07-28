@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from openprintbench.models import FixtureProvenance, SlicerProbe
+from openprintbench.models import FixtureProvenance, ProfileProvenance, SlicerProbe
 from openprintbench.run import execute_bambu_slice
 from openprintbench.slicers.bambu import BambuSliceRequest
 
@@ -12,6 +12,7 @@ SOURCE_COMMIT = "a" * 40
 SOURCE_URL = (
     f"https://github.com/kforris/OpenPrintBench/blob/{SOURCE_COMMIT}/fixtures/cube-20mm.stl"
 )
+PROFILE_COMMIT = "b" * 40
 
 
 def make_fake_slicer(path: Path, *, exit_status: int = 0, sleep_seconds: float = 0) -> Path:
@@ -58,14 +59,31 @@ def provenance() -> FixtureProvenance:
     )
 
 
+def profile_provenance() -> ProfileProvenance:
+    return ProfileProvenance(
+        source_url=f"https://github.com/bambulab/BambuStudio/tree/{PROFILE_COMMIT}/profiles",
+        source_commit=PROFILE_COMMIT,
+        license="AGPL-3.0-only",
+    )
+
+
 def stl_request(tmp_path: Path, executable: Path) -> BambuSliceRequest:
     source = tmp_path / "cube-20mm.stl"
     source.write_text("solid cube\nendsolid cube\n", encoding="utf-8")
-    machine = tmp_path / "machine.json"
-    process = tmp_path / "process.json"
-    filament = tmp_path / "filament.json"
-    for path in (machine, process, filament):
-        path.write_text("{}", encoding="utf-8")
+    profile_root = tmp_path / "profiles"
+    machine = profile_root / "machine" / "machine.json"
+    process = profile_root / "process" / "process.json"
+    filament = profile_root / "filament" / "filament.json"
+    for path, category in (
+        (machine, "machine"),
+        (process, "process"),
+        (filament, "filament"),
+    ):
+        path.parent.mkdir(parents=True)
+        path.write_text(
+            json.dumps({"type": category, "name": f"test-{category}"}),
+            encoding="utf-8",
+        )
     return BambuSliceRequest(
         executable=executable,
         input_path=source,
@@ -74,6 +92,13 @@ def stl_request(tmp_path: Path, executable: Path) -> BambuSliceRequest:
         process_settings=process,
         filament_settings=(filament,),
     )
+
+
+def profile_kwargs(tmp_path: Path) -> dict[str, object]:
+    return {
+        "profile_root": tmp_path / "profiles",
+        "profile_provenance": profile_provenance(),
+    }
 
 
 def test_success_writes_portable_manifest_and_redacted_log(tmp_path: Path) -> None:
@@ -87,6 +112,7 @@ def test_success_writes_portable_manifest_and_redacted_log(tmp_path: Path) -> No
         run_dir=run_dir,
         provenance=provenance(),
         approved=True,
+        **profile_kwargs(tmp_path),
     )
 
     assert evidence.succeeded is True
@@ -97,6 +123,10 @@ def test_success_writes_portable_manifest_and_redacted_log(tmp_path: Path) -> No
     assert manifest["state"] == "executed"
     assert manifest["fixture"]["source_commit"] == SOURCE_COMMIT
     assert manifest["fixture"]["license"] == "CC0-1.0"
+    assert manifest["settings"]["materializer"] == "openprintbench-bambu-profile-merge-v1"
+    assert manifest["settings"]["provenance"]["source_commit"] == PROFILE_COMMIT
+    assert manifest["settings"]["sources"]["machine"]["name"] == "machine.json"
+    assert manifest["settings"]["materialized"]["machine"]["name"] == "machine.json"
     assert manifest["exit_status"] == 0
     assert manifest["timed_out"] is False
     assert manifest["physical_validation"] is None
@@ -144,6 +174,7 @@ def test_existing_run_directory_is_rejected(tmp_path: Path) -> None:
             run_dir=run_dir,
             provenance=provenance(),
             approved=True,
+            **profile_kwargs(tmp_path),
         )
 
 
@@ -156,6 +187,7 @@ def test_nonzero_exit_still_writes_evidence(tmp_path: Path) -> None:
         run_dir=tmp_path / "run",
         provenance=provenance(),
         approved=True,
+        **profile_kwargs(tmp_path),
     )
 
     manifest = json.loads(Path(evidence.manifest_path).read_text(encoding="utf-8"))
@@ -175,6 +207,7 @@ def test_timeout_is_recorded_without_an_exit_status(tmp_path: Path) -> None:
         provenance=provenance(),
         approved=True,
         timeout_seconds=0.01,
+        **profile_kwargs(tmp_path),
     )
 
     manifest = json.loads(Path(evidence.manifest_path).read_text(encoding="utf-8"))
@@ -212,4 +245,17 @@ def test_timeout_is_bounded(tmp_path: Path) -> None:
             provenance=provenance(),
             approved=True,
             timeout_seconds=0,
+        )
+
+
+def test_stl_execution_requires_profile_provenance(tmp_path: Path) -> None:
+    executable = make_fake_slicer(tmp_path / "BambuStudio")
+
+    with pytest.raises(ValueError, match="profile root"):
+        execute_bambu_slice(
+            stl_request(tmp_path, executable),
+            available_probe(executable),
+            run_dir=tmp_path / "run",
+            provenance=provenance(),
+            approved=True,
         )

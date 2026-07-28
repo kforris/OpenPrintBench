@@ -10,7 +10,7 @@ from pathlib import Path
 
 from openprintbench import __version__
 from openprintbench.discovery import DEFINITIONS, probe_slicer
-from openprintbench.models import FixtureProvenance
+from openprintbench.models import FixtureProvenance, ProfileProvenance
 from openprintbench.plan import create_bambu_plan, portable_plan
 from openprintbench.run import execute_bambu_slice
 from openprintbench.slicers.bambu import BambuSliceRequest
@@ -53,6 +53,10 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--fixture-source-url", required=True)
     run.add_argument("--fixture-source-commit", required=True)
     run.add_argument("--fixture-license", required=True)
+    run.add_argument("--profile-root", type=Path)
+    run.add_argument("--profile-source-url")
+    run.add_argument("--profile-source-commit")
+    run.add_argument("--profile-license")
     run.add_argument("--timeout-seconds", type=float, default=900.0)
     run.add_argument(
         "--approve",
@@ -142,6 +146,14 @@ def _run(args: argparse.Namespace) -> int:
         process_settings=args.process_settings,
         filament_settings=tuple(args.filament_settings),
     )
+    profile_values = (
+        args.profile_source_url,
+        args.profile_source_commit,
+        args.profile_license,
+    )
+    if any(profile_values) and not all(profile_values):
+        raise ValueError("profile source URL, commit, and license must be provided together")
+    profile_provenance = ProfileProvenance(*profile_values) if all(profile_values) else None
     evidence = execute_bambu_slice(
         request,
         probe,
@@ -151,6 +163,8 @@ def _run(args: argparse.Namespace) -> int:
             source_commit=args.fixture_source_commit,
             license=args.fixture_license,
         ),
+        profile_root=args.profile_root,
+        profile_provenance=profile_provenance,
         approved=args.approve,
         timeout_seconds=args.timeout_seconds,
     )

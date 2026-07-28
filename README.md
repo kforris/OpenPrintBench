@@ -80,6 +80,11 @@ uv run openprintbench run \
   --machine-settings path/to/machine.json \
   --process-settings path/to/process.json \
   --filament-settings path/to/filament.json \
+  --profile-root path/to/installed/profiles/BBL \
+  --profile-source-url \
+    https://github.com/bambulab/BambuStudio/tree/FULL_COMMIT/resources/profiles/BBL \
+  --profile-source-commit FULL_COMMIT \
+  --profile-license AGPL-3.0-only \
   --fixture-source-url \
     https://github.com/kforris/OpenPrintBench/blob/FULL_COMMIT/fixtures/cube-20mm.stl \
   --fixture-source-commit FULL_COMMIT \
@@ -90,8 +95,14 @@ uv run openprintbench run \
 The run directory must not already exist. OpenPrintBench gives the slicer a
 private `HOME` and temporary directory, removes secret-like environment
 variables, captures stdout/stderr into a redacted log, and fingerprints regular
-files under the isolated output directory. Generated 3MF/G-code remains local
-and must not be committed.
+files under the isolated output directory. For STL inputs, it resolves the
+installed Bambu profile inheritance into complete private run-local JSON files
+and records both source and materialized hashes. Generated 3MF/G-code remains
+local and must not be committed.
+
+See the first
+[repeatability evidence](docs/evidence/2026-07-28-bambu-stl-repeatability.md)
+for two runs using the project-authored CC0 cube fixture.
 
 ## Development
 

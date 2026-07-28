@@ -64,6 +64,24 @@ instead of manufacturing activity.
 - Kept X/Twitter cadence at no more than two original milestone posts or
   threads per week and excluded automated likes, follows, reposts, quote-posts,
   private messages, and generic engagement.
+- Added the first redistributable fixture: a project-authored 20 mm ASCII STL
+  cube released under CC0-1.0, with a sidecar license and pinned SHA-256.
+- Implemented the explicitly approved Bambu Studio executor linked to Issue
+  #1. It uses an argument array with `shell=False`, a new private run
+  directory, isolated `HOME`/temporary paths, secret-like environment removal,
+  a bounded timeout, redacted logging, and portable evidence manifests.
+- Added a local profile materializer because Bambu Studio CLI requires complete
+  machine/process/filament settings rather than installed leaf profiles.
+  Source commit/license, leaf hashes, materializer version, and resulting
+  profile hashes are recorded without redistributing the profiles.
+- Completed two successful Bambu Studio `02.06.00.51` digital slices with the
+  same fixture and settings. Both exited `0`; the G-code SHA-256 was identical.
+  Start time, duration, log timestamps, timing fields in `result.json`, and the
+  3MF container hash varied. No generated 3MF/G-code was committed and no
+  physical-print claim was made.
+- Audited GitHub and the authorized `@kforris_w` X account before development.
+  Issue #1 was the only open repository item; there were no open PRs, relevant
+  X mentions, or OpenPrintBench search results. No X reply or post was needed.
 
 ### Evidence
 
@@ -72,23 +90,35 @@ instead of manufacturing activity.
 - P0 draft: `docs/promotion/P0_BUILDING_IN_PUBLIC.md`
 - X destination: <https://x.com/kforris_w>
 - Public baseline CI remains green:
-  <https://github.com/kforris/OpenPrintBench/actions/runs/30328095151>
+  <https://github.com/kforris/OpenPrintBench/actions/runs/30328367492>
+- Fixture SHA-256:
+  `369c23daac96f4cde40ec6a0e13afb9be5ec4cbbf974c071c60f1009824477c4`
+- Bambu profile source:
+  `b506005bc4ee62124e24bf00e0f58656db3646a6` (`AGPL-3.0-only`)
+- Repeatability record:
+  `docs/evidence/2026-07-28-bambu-stl-repeatability.md`
+- Run 1: duration `0.650262` seconds, exit `0`, G-code SHA-256
+  `f6c6365d65ecf1110f4aefd1097558378006ad4f1738648fba74c0bfa95205c5`.
+- Run 2: duration `0.472667` seconds, exit `0`, G-code SHA-256
+  `f6c6365d65ecf1110f4aefd1097558378006ad4f1738648fba74c0bfa95205c5`.
+- Local validation after implementation: Ruff lint/format, mypy, 45 tests,
+  0 skipped/xfail, 87.38% branch coverage, package build, and
+  `git diff --check` passed.
 
 ### Blockers
 
-- No functional PR has been opened or merged yet, so the P0 publication gate is
-  not met.
-- No redistributable STL/3MF fixture has been selected yet.
+- The first functional PR is not merged and its `main` CI gate is not yet
+  satisfied, so P0 publication remains blocked.
+- Only one of the ten required redistributable fixtures is complete.
 - The target Bambu printer model is not yet recorded.
+- OrcaSlicer is not installed locally and no verified CI fixture is available.
 
 ### Next
 
-1. Select the first open fixture and implement the isolated Bambu Studio
-   execution path in a functional PR linked to Issue #1.
+1. Review the functional PR linked to Issue #1 and merge only after its CI is
+   green; then verify the resulting `main` CI.
 2. After that PR is merged and `main` CI is green, create and verify the P0
    visual, refresh the exact post copy, and publish through the authorized X
    account.
-3. Check GitHub issues/PRs and relevant X replies before selecting daily work;
-   reply with evidence after changes and close only resolved GitHub issues.
-4. Measure public repository and X signals 24 and 72 hours after the first
-   post.
+3. Add the next license-clear fixture or generator without weakening the
+   provenance gate.
