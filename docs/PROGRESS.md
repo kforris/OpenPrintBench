@@ -29,6 +29,12 @@ instead of manufacturing activity.
 - Pytest: 32 passed, 0 skipped/xfail.
 - Branch coverage: 87.61%, above the 85% gate.
 - Source distribution and wheel build: passed.
+- Public repository: <https://github.com/kforris/OpenPrintBench>
+- Baseline commit: `8f63b9c50600442d758fc9ce6cca047600bb11e1`
+- Three-version CI:
+  <https://github.com/kforris/OpenPrintBench/actions/runs/30327749606>
+- First v0.1 issue:
+  <https://github.com/kforris/OpenPrintBench/issues/1>
 
 ### Blockers
 
