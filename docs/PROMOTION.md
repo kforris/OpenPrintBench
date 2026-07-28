@@ -110,4 +110,3 @@ Internal first-month target:
 
 These are internal planning targets, not OpenAI program requirements and not a
 guarantee of acceptance.
-
