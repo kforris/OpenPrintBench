@@ -104,6 +104,10 @@ instead of manufacturing activity.
 - Local validation after implementation: Ruff lint/format, mypy, 45 tests,
   0 skipped/xfail, 87.38% branch coverage, package build, and
   `git diff --check` passed.
+- Functional PR: <https://github.com/kforris/OpenPrintBench/pull/2>
+- PR CI (Python 3.11, 3.12, and 3.13):
+  <https://github.com/kforris/OpenPrintBench/actions/runs/30368257211>
+- No public release exists yet.
 
 ### Blockers
 
