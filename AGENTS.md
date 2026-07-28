@@ -34,4 +34,3 @@ uv run pytest -q --cov=openprintbench --cov-report=term-missing
 uv build
 git diff --check
 ```
-

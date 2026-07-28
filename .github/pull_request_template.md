@@ -23,4 +23,3 @@
 - [ ] No credentials, serials, usernames, or absolute home paths are included.
 - [ ] Every fixture and profile may be redistributed.
 - [ ] No slicer binary or proprietary network plugin is redistributed.
-

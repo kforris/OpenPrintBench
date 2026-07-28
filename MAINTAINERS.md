@@ -8,4 +8,3 @@
 Maintainer status represents an ongoing responsibility, not only repository
 ownership. Changes to this file should be supported by a public history of
 review, triage, and release work.
-

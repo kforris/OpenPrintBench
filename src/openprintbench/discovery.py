@@ -8,6 +8,7 @@ import shutil
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
+from tempfile import TemporaryDirectory
 from typing import ClassVar
 
 from openprintbench.models import SlicerProbe
@@ -105,14 +106,16 @@ class SlicerDiscovery:
             )
 
         try:
-            completed = subprocess.run(
-                [str(executable), "--help"],
-                check=False,
-                capture_output=True,
-                text=True,
-                timeout=self.probe_timeout_seconds,
-                shell=False,
-            )
+            with TemporaryDirectory(prefix="openprintbench-probe-") as probe_directory:
+                completed = subprocess.run(
+                    [str(executable), "--help"],
+                    check=False,
+                    capture_output=True,
+                    text=True,
+                    timeout=self.probe_timeout_seconds,
+                    shell=False,
+                    cwd=probe_directory,
+                )
         except (OSError, subprocess.TimeoutExpired) as error:
             return SlicerProbe(
                 slicer=self.definition.key,

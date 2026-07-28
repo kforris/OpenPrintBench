@@ -33,4 +33,3 @@ requirements and do not guarantee acceptance into any support program.
 - Attach photos and measurements by content hash.
 - Link digital comparisons to physical observations.
 - Publish a validation protocol and at least one repeatability study.
-

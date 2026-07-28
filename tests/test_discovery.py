@@ -52,12 +52,16 @@ def test_probe_success(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     candidate = tmp_path / "BambuStudio"
     candidate.write_text("#!/bin/sh\n", encoding="utf-8")
     candidate.chmod(0o755)
+    observed_cwd: list[str] = []
+
+    def successful_help(*args: object, **kwargs: object) -> subprocess.CompletedProcess[str]:
+        observed_cwd.append(str(kwargs["cwd"]))
+        return subprocess.CompletedProcess(args[0], 0, "BambuStudio-02.06.00.51:\n", "")
+
     monkeypatch.setattr(
         subprocess,
         "run",
-        lambda *args, **kwargs: subprocess.CompletedProcess(
-            args[0], 0, "BambuStudio-02.06.00.51:\n", ""
-        ),
+        successful_help,
     )
 
     probe = SlicerDiscovery(BAMBU).probe(candidate)
@@ -65,6 +69,8 @@ def test_probe_success(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     assert probe.available is True
     assert probe.version == "02.06.00.51"
     assert probe.error is None
+    assert len(observed_cwd) == 1
+    assert "openprintbench-probe-" in observed_cwd[0]
 
 
 def test_probe_reports_nonzero_help(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

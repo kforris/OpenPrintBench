@@ -29,4 +29,3 @@ body:
           required: true
         - label: This does not require redistributing a slicer or proprietary plugin.
           required: true
-

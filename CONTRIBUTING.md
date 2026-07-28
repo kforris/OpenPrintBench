@@ -19,4 +19,3 @@ Before opening a pull request:
 5. Explain any trademark, license, or fixture provenance concerns.
 
 Security issues should follow [SECURITY.md](SECURITY.md), not a public issue.
-

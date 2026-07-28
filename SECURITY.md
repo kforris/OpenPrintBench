@@ -13,4 +13,3 @@ the private contact method listed on the maintainer's GitHub profile.
 OpenPrintBench does not need Bambu Cloud credentials. A request for cloud
 credentials, printer access codes, or account tokens is outside project scope
 and should be treated as suspicious.
-

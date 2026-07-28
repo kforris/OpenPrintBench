@@ -20,4 +20,3 @@ The Python package currently contains:
 
 Slicers are executed as separate local processes using argument arrays.
 OpenPrintBench does not link to, embed, or redistribute slicer code.
-

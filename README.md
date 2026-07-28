@@ -90,4 +90,3 @@ uv build
 
 OpenPrintBench is available under the [MIT License](LICENSE). Interoperated
 slicers retain their own licenses and are not redistributed by this project.
-

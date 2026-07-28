@@ -56,4 +56,3 @@ Use a token budget of 120000 tokens for this goal.
 
 Audit-friendliness: excellent — eight mechanical acceptance checks, six
 detectable stop conditions, and a finite release boundary.
-
