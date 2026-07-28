@@ -33,3 +33,14 @@ requirements and do not guarantee acceptance into any support program.
 - Attach photos and measurements by content hash.
 - Link digital comparisons to physical observations.
 - Publish a validation protocol and at least one repeatability study.
+
+## Promotion gates
+
+- [x] P0 public baseline draft prepared; publication requires account-owner
+      confirmation.
+- [ ] P1 first reproducible-slice evidence post.
+- [ ] P2 v0.1.0 release announcement.
+- [ ] P3 independent-use and maintainer-response update.
+
+See [the promotion plan](PROMOTION.md) for evidence gates, cadence, privacy
+rules, and internal measurement targets.

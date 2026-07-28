@@ -21,6 +21,9 @@ processes and does not redistribute them.
   or temporary files unless explicitly marked as local integration checks.
 - Public claims require a reproducible command, version, hash, and evidence
   artifact.
+- Follow `docs/PROMOTION.md` for public communication. Automation may prepare
+  drafts but must not publish, reply, like, follow, or cross-post without the
+  account owner's confirmation of the exact action.
 
 ## Required validation
 

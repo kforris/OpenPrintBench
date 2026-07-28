@@ -25,7 +25,8 @@ request access tokens, or load proprietary network plugins.
 
 Pre-alpha. The current code creates and validates slicing plans; it does not
 yet execute a slice or claim physical-print validation. See
-[the roadmap](docs/ROADMAP.md) and [daily progress log](docs/PROGRESS.md).
+[the roadmap](docs/ROADMAP.md), [daily progress log](docs/PROGRESS.md), and
+[evidence-gated promotion plan](docs/PROMOTION.md).
 
 ## Quick start
 

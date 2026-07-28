@@ -47,3 +47,32 @@ instead of manufacturing activity.
 1. Complete local lint, type-check, tests, coverage, and build.
 2. Publish the reviewed initial repository and enable CI.
 3. Select the first open fixture and execute an isolated Bambu Studio slice.
+
+## 2026-07-28
+
+### Completed
+
+- Added an evidence-gated promotion plan covering the public baseline, first
+  reproducible slice, v0.1 release, and first independent use.
+- Prepared a two-post P0 building-in-public draft without publishing it.
+- Limited X/Twitter cadence to two original milestone posts or threads per
+  week, with exact-text account-owner confirmation required before publishing.
+
+### Evidence
+
+- Promotion plan: `docs/PROMOTION.md`
+- P0 draft: `docs/promotion/P0_BUILDING_IN_PUBLIC.md`
+- Public baseline CI remains green:
+  <https://github.com/kforris/OpenPrintBench/actions/runs/30327838692>
+
+### Blockers
+
+- The X/Twitter destination account has not been identified or connected.
+- The account owner has not approved the P0 draft for publication.
+- The target Bambu printer model is not yet recorded.
+
+### Next
+
+1. Confirm the X/Twitter account and review the P0 draft.
+2. Select the first open fixture and execute an isolated Bambu Studio slice.
+3. Measure public repository signals 24 and 72 hours after the first post.
