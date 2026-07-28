@@ -13,10 +13,32 @@ substitute for releases, issue triage, reproducible evidence, or actual use.
 - Never publish credentials, device serials, private models or profiles, local
   usernames, absolute home paths, or private analytics.
 - Do not imply affiliation with Bambu Lab or OrcaSlicer.
-- Do not automate likes, follows, replies, quote-posts, or repetitive
-  cross-posting.
-- Drafts may be prepared automatically. Publishing to a social account requires
-  the account owner's confirmation of the exact text and destination.
+- Do not automate likes, follows, reposts, quote-posts, private messages, or
+  repetitive cross-posting.
+- The maintainer authorized routine OpenPrintBench milestone posts and
+  project-relevant technical replies through the authenticated maintainer X
+  account on 2026-07-28. No per-post confirmation is required while that
+  authorization remains in force, provided the evidence gate, weekly limit, and
+  safety rules in this document are satisfied.
+- Before each public write, save the exact copy and verify the destination.
+  Afterward, record the public URL and verify the rendered text, image, link,
+  and absence of private information.
+- Separate approval is still required for security disclosures, licensing or
+  affiliation claims, legal or financial topics, controversial commentary,
+  private information, direct messages, or a material change of project scope.
+
+## Visual rules
+
+- Prefer one useful visual for each milestone post: an evidence-flow diagram,
+  a real terminal/result capture with private data redacted, or a clearly
+  labelled illustration.
+- Generated images may support a post, but must not invent dashboards, terminal
+  output, user counts, benchmarks, physical prints, or product affiliation.
+- Create the final visual only after the milestone evidence is current. Store
+  its source or generation brief, final asset, and alt text under
+  `docs/promotion/`.
+- Verify the image at its final crop and resolution before publishing. Text in
+  the post must remain understandable without the image.
 
 ## Milestone triggers
 
@@ -27,14 +49,18 @@ Gate:
 - public repository;
 - green CI on Python 3.11, 3.12, and 3.13;
 - honest pre-alpha README;
-- one public v0.1 issue.
+- one public v0.1 issue;
+- the first non-documentation functional PR, linked to Issue #1, is merged and
+  its `main` CI is green.
 
 Content:
 
 - one two-post “building in public” thread;
-- ask for openly licensed STL/3MF fixtures and technical feedback;
+- include one verified visual and alt text;
+- ask for openly licensed STL/3MF fixtures, macOS reproduction help, and
+  specific technical feedback;
 - explicitly state that slice execution and physical validation are not yet
-  complete.
+  complete unless the merged PR and public evidence prove otherwise.
 
 ### P1 — first reproducible slice
 
@@ -92,6 +118,23 @@ Content:
   everywhere.
 - Replies should answer real technical questions. Do not post generic
   engagement bait.
+- Ask narrow questions that a reader can answer, such as whether a fixture
+  license is redistributable, whether a run reproduces on a named macOS/slicer
+  version, or which manifest field is missing. Do not ask for stars as a
+  condition of help.
+
+## Daily feedback loop
+
+Run the process in [SOCIAL_FEEDBACK_LOOP.md](SOCIAL_FEEDBACK_LOOP.md) before
+selecting the day's work and again after publishing a code or documentation
+change. GitHub remains the durable tracker; relevant public X feedback should
+link to an existing issue or be converted into one when it is reproducible and
+actionable.
+
+An issue may be closed only after its documented acceptance criteria are met,
+the change is merged, required CI is green, and a closing comment links the
+evidence. A public X reply may then point to the issue, PR, commit, evidence
+artifact, or release. A reply alone is not evidence that a bug is fixed.
 
 ## Measurement
 

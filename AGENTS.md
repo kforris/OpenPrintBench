@@ -21,9 +21,14 @@ processes and does not redistribute them.
   or temporary files unless explicitly marked as local integration checks.
 - Public claims require a reproducible command, version, hash, and evidence
   artifact.
-- Follow `docs/PROMOTION.md` for public communication. Automation may prepare
-  drafts but must not publish, reply, like, follow, or cross-post without the
-  account owner's confirmation of the exact action.
+- Follow `docs/PROMOTION.md` and `docs/SOCIAL_FEEDBACK_LOOP.md` for public
+  communication. The maintainer has authorized routine OpenPrintBench milestone
+  posts and technical replies through the authenticated maintainer X account
+  after their documented evidence gates are met. Record the exact copy and
+  public URL after each write. This standing authorization does not cover likes,
+  follows, reposts, quote-posts, generic engagement, private messages, or claims
+  involving security, licensing, affiliation, legal, financial, or private
+  information; those actions require separate maintainer review.
 
 ## Required validation
 

@@ -36,11 +36,16 @@ requirements and do not guarantee acceptance into any support program.
 
 ## Promotion gates
 
-- [x] P0 public baseline draft prepared; publication requires account-owner
-      confirmation.
+- [x] P0 public baseline draft and social-feedback procedure prepared.
+- [x] Authenticated X destination verified and routine project publishing
+      authorized.
+- [ ] First functional PR linked to Issue #1 merged with green `main` CI.
+- [ ] P0 visual and two-post thread published with alt text and recorded URL.
 - [ ] P1 first reproducible-slice evidence post.
 - [ ] P2 v0.1.0 release announcement.
 - [ ] P3 independent-use and maintainer-response update.
 
-See [the promotion plan](PROMOTION.md) for evidence gates, cadence, privacy
-rules, and internal measurement targets.
+See [the promotion plan](PROMOTION.md) and
+[the daily feedback loop](SOCIAL_FEEDBACK_LOOP.md) for evidence gates,
+cadence, privacy rules, response/closure rules, and internal measurement
+targets.

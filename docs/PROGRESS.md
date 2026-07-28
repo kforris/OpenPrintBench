@@ -54,25 +54,41 @@ instead of manufacturing activity.
 
 - Added an evidence-gated promotion plan covering the public baseline, first
   reproducible slice, v0.1 release, and first independent use.
-- Prepared a two-post P0 building-in-public draft without publishing it.
-- Limited X/Twitter cadence to two original milestone posts or threads per
-  week, with exact-text account-owner confirmation required before publishing.
+- Prepared a two-post P0 building-in-public draft without publishing it before
+  the first functional PR gate.
+- Verified the logged-in X destination as `@kforris_w` and recorded the
+  maintainer's standing authorization for routine OpenPrintBench posts and
+  technical replies.
+- Added a daily GitHub/X feedback loop with evidence-based response and issue
+  closure rules.
+- Kept X/Twitter cadence at no more than two original milestone posts or
+  threads per week and excluded automated likes, follows, reposts, quote-posts,
+  private messages, and generic engagement.
 
 ### Evidence
 
 - Promotion plan: `docs/PROMOTION.md`
+- Daily feedback loop: `docs/SOCIAL_FEEDBACK_LOOP.md`
 - P0 draft: `docs/promotion/P0_BUILDING_IN_PUBLIC.md`
+- X destination: <https://x.com/kforris_w>
 - Public baseline CI remains green:
-  <https://github.com/kforris/OpenPrintBench/actions/runs/30327838692>
+  <https://github.com/kforris/OpenPrintBench/actions/runs/30328095151>
 
 ### Blockers
 
-- The X/Twitter destination account has not been identified or connected.
-- The account owner has not approved the P0 draft for publication.
+- No functional PR has been opened or merged yet, so the P0 publication gate is
+  not met.
+- No redistributable STL/3MF fixture has been selected yet.
 - The target Bambu printer model is not yet recorded.
 
 ### Next
 
-1. Confirm the X/Twitter account and review the P0 draft.
-2. Select the first open fixture and execute an isolated Bambu Studio slice.
-3. Measure public repository signals 24 and 72 hours after the first post.
+1. Select the first open fixture and implement the isolated Bambu Studio
+   execution path in a functional PR linked to Issue #1.
+2. After that PR is merged and `main` CI is green, create and verify the P0
+   visual, refresh the exact post copy, and publish through the authorized X
+   account.
+3. Check GitHub issues/PRs and relevant X replies before selecting daily work;
+   reply with evidence after changes and close only resolved GitHub issues.
+4. Measure public repository and X signals 24 and 72 hours after the first
+   post.
