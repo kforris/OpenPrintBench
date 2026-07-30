@@ -74,6 +74,8 @@ def build_bambu_slice_command(request: BambuSliceRequest) -> tuple[str, ...]:
         "--outputdir",
         str(output_dir),
     ]
+    if suffix == ".stl":
+        command.extend(("--orient", "1", "--arrange", "1"))
     if settings:
         command.extend(("--load-settings", ";".join(str(path) for path in settings)))
     if filaments:

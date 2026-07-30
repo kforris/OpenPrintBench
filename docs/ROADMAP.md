@@ -9,9 +9,10 @@ requirements and do not guarantee acceptance into any support program.
 - [x] Probe Bambu Studio version and supported command-line options.
 - [x] Produce a deterministic, shell-free slice plan.
 - [x] Fingerprint source models with SHA-256.
-- [ ] Execute an explicitly approved Bambu Studio slice in an isolated run
-      directory.
-- [ ] Capture duration, exit status, output hashes, and a redacted log.
+- [x] Execute an explicitly approved Bambu Studio slice in an isolated run
+      directory. See the
+      [2026-07-28 evidence](evidence/2026-07-28-bambu-stl-repeatability.md).
+- [x] Capture duration, exit status, output hashes, and a redacted log.
 - [ ] Add an OrcaSlicer execution adapter after local installation or a
       verified CI fixture is available.
 - [ ] Publish at least ten redistributable test fixtures or generators.
